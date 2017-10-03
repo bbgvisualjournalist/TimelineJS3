@@ -55,6 +55,10 @@ function getLinkAndIframe() {
   /* SOURCE KEY
   ================================================== */
   if (e_source.value.match("docs.google.com")) {
+    if (e_source.value.match(new RegExp('/spreadsheets/d/e'))) {
+      theobj.warning = "Invalid Google URL. Please see the note above about how a recent change with Google Spreadsheets affects creating timelines.";
+      return theobj;
+    }
     var obj = TL.ConfigFactory.parseGoogleSpreadsheetURL(e_source.value);
     source_key = obj.key;
   } else {
@@ -85,12 +89,26 @@ function getLinkAndIframe() {
 
   /* IFRAME AND LINK
   ================================================== */
-  vars    =  generator_embed_path + "?source=" + source_key;
+
+  if ((window.location.host).includes("localhost:") || (window.location.host).includes("0.0.0.0:") ){
+    urlBase = "http://" + window.location.host + "/source/";
+  }
+  else if ((window.location.host).includes("timeline.knilab.com")){
+    urlBase = "http://cdn.knightlab.com/libs/timeline3/dev/";
+  }
+  else {
+    urlBase = "https://cdn.knightlab.com/libs/timeline3/latest/";
+  }
+
+  vars    =  urlBase + "embed/index.html?source=" + source_key;
+
   vars    += "&font=" + e_font.getAttribute("data-value");
   vars    += "&lang=" + e_language.value;
+
   if (start_at_end) {
     vars  += "&start_at_end=" + start_at_end;
   }
+
   if (timenav_position == "top") {
     vars += "&timenav_position=" + timenav_position;
   }
@@ -123,7 +141,7 @@ function getLinkAndIframe() {
   if (e_height.value > 0 || e_height.value.match("%")) {
     iframe  += " height='" + e_height.value + "'";
   }
-  iframe    += " frameborder='0'></iframe>";
+  iframe    += " webkitallowfullscreen mozallowfullscreen allowfullscreen frameborder='0'></iframe>";
 
   theobj.iframe = iframe;
   theobj.link   = vars;
@@ -133,44 +151,51 @@ function getLinkAndIframe() {
 
 /* EMBED GENERATOR
 ================================================== */
+var $ = jQuery;
+
 function updateEmbedCode(element, options) {
+  $("#embed-source-url-message").hide();
   var e_embed = document.getElementById('embed_code'),
     el = getLinkAndIframe();
+    if (el.warning) {
+      $("#embed-source-url-message").html(el.warning);
+      $("#embed-source-url-message").css('display','block');
+      return;
+    }
   e_embed.value = el.copybox;
-  jQuery('#embed_code_medium').val(el.link);
-  jQuery("#preview-embed-link").attr('href', el.link);
-  jQuery("#preview-embed-iframe").html(el.iframe);
-  if (jQuery("#preview-embed").css("display") == "none"){
-    jQuery("#preview-embed").css("display","block");
+//  document.getElementById('embed_code_medium').val(el.link);
+  document.getElementById('preview-embed-link').setAttribute('href', el.link);
+  document.getElementById("sharable-url").innerHTML = el.link;
+  document.getElementById("preview-embed-iframe").innerHTML = el.iframe;
+  if (!document.getElementById("preview-embed").style.display){
+    document.getElementById("preview-embed").style.display = "block";
   }
 }
 
-
-
-var $ = jQuery;
-$(document).ready(function() {
+document.addEventListener("DOMContentLoaded", function() {
   if (window.innerWidth <= 700) {
-    var intro = $('#intro-copy');
-    $('#intro-copy').remove();
-    $('#screencast').prepend(intro);
+    var intro = document.getElementById('intro-copy');
+    document.getElementById('intro-copy').parentNode.removeChild(document.getElementById('intro-copy'));
+    document.getElementById('screencast').insertBefore(intro, document.getElementById('screencast').firstChild);
   }
+
   // More Options
-  $(".show-options").click(function (e) {
+  $("#show-options").click(function (e) {
     $(this).hide();
-    $(".hide-options").show();
+    $("#hide-options").show();
     $(".more-options").slideDown();
     return false;
   });
 
-  $(".hide-options").click(function (e) {
+  $("#hide-options").click(function (e) {
     $(this).hide();
-    $(".show-options").show();
+    $("#show-options").show();
     $(".more-options").slideUp();
     return false;
   });
 
   // Preview
-  $("#iframe-preview-button").click(function () {
+  document.getElementById("iframe-preview-button").addEventListener("click", function () {
     updateEmbedCode();
     var $embed = $("#preview-embed-iframe");
 
@@ -194,17 +219,17 @@ $(document).ready(function() {
   $("#embed_code").click(function() { $(this).select(); });
   $('#make-step-3 input').change(function(evt) { updateEmbedCode(evt); });
   $('#make-step-3 select').change(function(evt) { updateEmbedCode(evt); });
-  $("#embed-font li").on("click", function(evt){
+  $("#embed-font li").click(function(evt){
     var currentFont = document.getElementById("embed-font-active");
-    currentFont.removeChild(currentFont.firstChild);
+  //  currentFont.removeChild(currentFont.firstChild);
     currentFont.removeAttribute("id");
     $(this).attr("id", "embed-font-active")
-           .prepend('<i class="fa fa-check"></i>');
+  //         .prepend('<span class="icon-github"></span>');
     var fontPair = $(this).data("value");
     $("#font-pair-preview").attr("src", "static/img/make/" + fontPair.toLowerCase() + ".png")
                            .attr("alt", fontPair);
     $("ul#embed-font").hide();
-    updateEmbedCode(evt);
+  //    updateEmbedCode(evt);
   });
   $("#embed-font-dropdown a, #font-pair-preview").on("click", function(evt){
       evt.preventDefault();

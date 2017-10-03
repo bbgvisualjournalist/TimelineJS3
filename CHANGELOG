@@ -1,6 +1,49 @@
-3.4.1 (not yet released)
+3.5.1 (2017-05-03)
+* PR #522 use https in wistia
+
+3.5.0 (2017-05-03)
+* PR #510 Twitter image support
+* PR #520, #515 Imgur image support
+* PR #514 Wistia video support (URL only)
+* PR #508 Fixes to local previews for development
+
+3.4.9 (2017-04-10)
+------------------
+* PR #468 support audio and video files (.mp4, .mp3, .wav, .m4a)
+* PR #460 improve spotify documentation and support album and artist pages
+* PR #454 use the `lang` attribute set in the embed url as the lang for the iframe
+* PR #453 add support for title and alt tags on images
+
+3.4.8 (2017-03-31)
+------------------
+* Fix missing accent in French translation
+* Add additional Thai translation
+
+3.4.7 (2016-01-12)
+* PR #447 Enable Vimeo fullscreen controls
+
+3.4.6 (2016-12-12)
+* Revert PR #387 which was causing slide cutoff on small screens
+
+3.4.5 (2016-12-07)
+* PR #428 - Reinstate table display for IE. #427
+
+3.4.3 (2016-11-15)
+------------------------
+* Revert PR #374, reopen #277. Fix left black bar across full screen timelines.
+
+3.4.2 (2016-11-15)
+------------------------
+* PR #374 - Adds margin-top for large screen disply. Fixes #277
+* PR #401 - Adds Vietnamese translation
+* PR #419 - Removes year zero from the timeline. Fixes #328
+* PR #387 - Fixes background image scrolling on long slide. #360
+* PR #389 - Adds YouTube end-time feature. #388
+
+3.4.1 (2016-10-04)
 ------------------------
 * PR #400 - pause Vine, DailyMotion, and Soundcloud media on slide exit (thanks @Hammman and @JustaBitDope)
+* PR #413 - French language support additions
 
 3.4.0 (2018-08-30)
 -------------------------
