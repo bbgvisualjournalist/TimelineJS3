@@ -1,0 +1,197 @@
+<html>
+
+<head>
+    <title>Bundled TimelineJS test page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <!-- dev-server equivalent of the dist/js/timeline.js global TL bundle -
+         module scripts run before DOMContentLoaded, so TL is set before the
+         inline script below (which waits for DOMContentLoaded) needs it.
+         src/js/index.js's own `import "../less/TL.Timeline.less"` gives us
+         Vite's native LESS handling + HMR for free - no separate <link> needed. -->
+    <script type="module">
+        import * as TL from '../js/index.js';
+        window.TL = TL;
+    </script>
+    <!-- this is normally done by embed page -->
+    <script>
+        const ALL_FONT_OPTIONS = [ // 21 right now
+            'default', 'abril-droidsans', 'amatic-andika', 'bevan-pontanosans', 'bitter-raleway', 'clicker-garamond', 'dancing-ledger',  'fjalla-average', 'georgia-helvetica', 'knightlab', 'lustria-lato', 'medula-lato', 'oldstandard', 'opensans-gentiumbook', 'playfair-faunaone', 'playfair', 'pt', 'roboto-megrim', 'rufina-sintony', 'ubuntu', 'unicaone-vollkorn', 
+        ]
+        var options = {
+            lang: 'es',
+            debug: true,
+            height: 650,
+            soundcite: true,
+            hash_bookmark: true,
+            start_at_end: false,
+            autolink: false,
+            ga_measurement_id: 'G-LVEFKMG087',
+            sheets_proxy: 'https://sheets-proxy.knightlab.com/proxy/',
+            font: ALL_FONT_OPTIONS[3],
+        }
+
+
+        function ready(fn) {
+            if (document.readyState != 'loading') {
+                fn();
+            } else {
+                document.addEventListener('DOMContentLoaded', fn);
+            }
+        }
+
+        function timelineFromInput() {
+            document.getElementById('timeline-embed').innerHTML = ''
+            var dataUrl = document.getElementById('timeline-src').value
+            window.timeline = new TL.Timeline('timeline-embed', dataUrl, options)
+        }
+
+        function checkMediaType() {
+            var url = document.getElementById('media-url').value
+            if (!url) {
+                document.getElementById('media-result').innerHTML = '<span style="color: red;">Please enter a URL</span>'
+                return
+            }
+
+            var result = TL.lookupMediaType({url: url}, false)
+            if (result) {
+                document.getElementById('media-result').innerHTML =
+                    '<strong>Type:</strong> ' + result.type + '<br>' +
+                    '<strong>Name:</strong> ' + result.name
+            } else {
+                document.getElementById('media-result').innerHTML = '<span style="color: orange;">No matching media type found</span>'
+            }
+        }
+
+        ready(function() {
+
+            // sanitize test
+            // var dataUrl = 'https://docs.google.com/spreadsheets/d/1Q4-R3mlK7w1liCEl5_SGPaeLpfHDVdMtc83rjSTHBZo/edit#gid=0'
+
+            // Zander Work's exploit
+            // var dataUrl = 'https://docs.google.com/spreadsheets/d/1Jt5Csoku0W73100mnG_byVdvCFLXT8G5gG9lu1yggA0/edit#gid=0'
+
+            // women in computing:
+            var dataUrl = 'https://docs.google.com/spreadsheets/u/1/d/1xuY4upIooEeszZ_lCmeNx24eSFWe0rHe9ZdqH2xqVNk/pubhtml';
+
+            window.timeline = new TL.Timeline('timeline-embed', dataUrl, options)
+
+            window.timeline.on("ready", () => {
+                console.log("Timeline ready event fired")
+            })
+
+
+            document.getElementById('timeline-src').value = dataUrl
+            document.getElementById('timeline-src').addEventListener('keyup', (e) => {
+                e.preventDefault();
+                if (e.keyCode === 13) {
+                    timelineFromInput()
+                }
+            })
+
+            document.getElementById('media-url').addEventListener('keyup', (e) => {
+                e.preventDefault();
+                if (e.keyCode === 13) {
+                    checkMediaType()
+                }
+            })
+
+            document.querySelectorAll('nav a').forEach(el => {
+                el.addEventListener('click', e => {
+                    window.location.hash = ''
+                    e.preventDefault()
+                    let url = e.target.attributes['href'].value
+                    document.getElementById('timeline-src').value = url
+                    timelineFromInput()
+                })
+            })
+        })
+    </script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #ddd;
+        }
+        
+        #timeline-embed {
+            margin: 1em 0;
+            height: 650px;
+        }
+        
+        input[type="text"] {
+            font-size: 12pt
+        }
+        
+        nav {
+            margin: 10px 0;
+        }
+        
+        nav a {
+            margin: 5px;
+        }
+
+        .tool-section {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tool-section h3 {
+            margin-top: 0;
+        }
+
+        .tool-input {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .tool-input input {
+            flex: 1;
+        }
+
+        .tool-input button {
+            padding: 5px 15px;
+            font-size: 12pt;
+            cursor: pointer;
+        }
+
+        #media-result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 3px;
+            min-height: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Timeline Development</h1>
+
+    <div>
+        <label for="timeline-src">data source URL:</label><input type="text" size="120" name="timeline-src" id="timeline-src" />
+    </div>
+    <nav>
+        <a href='https://docs.google.com/spreadsheets/u/1/d/1xuY4upIooEeszZ_lCmeNx24eSFWe0rHe9ZdqH2xqVNk/pubhtml'>Women in Computing</a>
+        <a href="all-media-types.json">All Media Types</a>
+        <a href="eras.json">Eras</a>
+        <a href="cosmo-mixed.json">Cosmo + Human Scale Mix</a>
+        <a href="my-own-timeline.csv">CSV configuration file</a>
+    </nav>
+    <div id='timeline-embed'></div>
+
+    <div class="tool-section">
+        <h3>Media Type Checker</h3>
+        <div class="tool-input">
+            <input type="text" id="media-url" placeholder="Enter a URL to check its media type..." />
+            <button onclick="checkMediaType()">Check</button>
+        </div>
+        <div id="media-result"></div>
+    </div>
+
+
+    </body>
+
+</html>

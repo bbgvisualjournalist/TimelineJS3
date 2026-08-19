@@ -1,4 +1,4 @@
-#TimelineJS3 API
+# TimelineJS3 API
 
 Timeline 3 exposes the events and methods listed below.
 
@@ -38,7 +38,7 @@ timeline.on(event_name, function(data) {
 
 `dataloaded` _after data has been loaded_
 
-`hash_updated` _when the hashbookmack in the url bar is updated_
+`hash_updated` _when the hashbookmark in the url bar is updated_
 
 * unique_id:  string, id of the new current slide
 * hashbookmark: string, the hash
@@ -97,10 +97,10 @@ timeline.on(event_name, function(data) {
 
 `getSlide(<int slide_index>)` _get TL.Slide object by index_
 
-`getSlideId(<string id>)` _get TL.Slide object by id_
+`getSlideById(<string id>)` _get TL.Slide object by id_
 
 
-####Event data format
+### Event data format
 ```javascript
 {
     "start_date": {
@@ -146,4 +146,3 @@ timeline.on(event_name, function(data) {
     "unique_id":         <string>    // optional
 };
 ```
-
